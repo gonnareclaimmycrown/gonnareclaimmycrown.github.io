@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to File Converter</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-top: 0;
+            font-size: 28px;
+        }
+        
+        .input-area {
+            margin-bottom: 20px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: none;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .instructions {
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 25px;
+            font-size: 14px;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .file-name {
+            margin: 15px 0;
+        }
+        
+        .file-name input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .example-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 0;
+        }
+        
+        .success {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: #d4edda;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #155724;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .github-corner {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 CSV to File Converter</h1>
+        
+        <div class="input-area">
+            <label for="csv-data">Paste your CSV data:</label>
+            <textarea id="csv-data" placeholder="Paste your CSV data here...&#10;Example:&#10;Player,Item Name,Count&#10;&quot;Player1&quot;,item1,100"></textarea>
+        </div>
+        
+        <div class="file-name">
+            <label for="filename">File name:</label>
+            <input type="text" id="filename" value="game_items.csv">
+        </div>
+        
+        <button id="download-btn" class="btn">Download CSV File</button>
+        
+        <button class="example-btn" id="load-example">Load Example Data</button>
+        
+        <div id="success-message" class="success">
+            ✔️ File downloaded successfully!<br>
+            You can now import it into Google Sheets.
+        </div>
+        
+        <div class="instructions">
+            <h3>How to use:</h3>
+            <ol>
+                <li>Copy your CSV data (including headers)</li>
+                <li>Paste it into the text box above</li>
+                <li>Click "Download CSV File"</li>
+                <li>Import to Google Sheets:
+                    <ol>
+                        <li>Go to <a href="https://sheets.new" target="_blank">sheets.new</a></li>
+                        <li>File → Import → Upload</li>
+                        <li>Select your downloaded CSV file</li>
+                        <li>Set separator to "Detect automatically"</li>
+                    </ol>
+                </li>
+            </ol>
+        </div>
+        
+        <div class="footer">
+            Hosted on GitHub Pages • Works on all devices
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const csvTextarea = document.getElementById('csv-data');
+            const downloadBtn = document.getElementById('download-btn');
+            const filenameInput = document.getElementById('filename');
+            const successMessage = document.getElementById('success-message');
+            const loadExampleBtn = document.getElementById('load-example');
+            
+            // Load example data
+            loadExampleBtn.addEventListener('click', function() {
+                csvTextarea.value = `Player,Item Name,Count
+"Tamagoyaki",coin,1753826
+"Tamagoyaki",abyssal essence,1633
+"Tamagoyaki",emp tea leaf,296
+"Tamagoyaki",red tea leaf,270
+"Tamagoyaki",umbral leather,61
+"steamguyqq",coin,1766523
+"steamguyqq",abyssal essence,1667
+"steamguyqq",emp tea leaf,287
+"Tatertot7",coin,1767940
+"Tatertot7",abyssal essence,1518
+"Tatertot7",emp tea leaf,265`;
+            });
+            
+            // Download functionality
+            downloadBtn.addEventListener('click', function() {
+                const csvData = csvTextarea.value.trim();
+                const filename = filenameInput.value || 'game_items.csv';
+                
+                if (!csvData) {
+                    alert('Please paste some CSV data first!');
+                    return;
+                }
+                
+                // Create Blob and download
+                const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.display = 'none';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Show success message
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>
